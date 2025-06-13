@@ -68,3 +68,24 @@ class TextTransform:
                 tokens.append(self.vocab['<PAD>'])
 
             return torch.tensor(tokens, dtype=torch.long)
+
+if __name__ == '__main__':
+    # Test the transforms
+
+    # apply image transform
+    example_image = Image.new('RGB', (256, 256), color='blue')
+    image_transform = ImageTransform(size=256, is_training=True)
+
+    image_tensor = image_transform(example_image)
+    print("image_tensor shape: ", image_tensor.shape) # torch.Size([3, 256, 256])
+    print("image_tensor dtype: ", image_tensor.dtype) # torch.float32
+    print(image_tensor)
+
+    # apply text transform
+    example_image = "Chest X-ray shows no acute cardiopulmonary disease."
+    text_transform = TextTransform(tokenizer=None, max_length=128)
+
+    token_ids = text_transform(example_image)
+    print("token_ids shape: ", token_ids.shape) # torch.Size([128])
+    print("token_ids dtype: ", token_ids.dtype) # torch.int64
+    print(token_ids)
