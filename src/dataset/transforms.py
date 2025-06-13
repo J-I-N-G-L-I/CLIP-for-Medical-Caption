@@ -70,7 +70,7 @@ class TextTransform:
             return torch.tensor(tokens, dtype=torch.long)
 
 if __name__ == '__main__':
-    # Test the transforms
+    # Test the transform methods
 
     # apply image transform
     example_image = Image.new('RGB', (256, 256), color='blue')
