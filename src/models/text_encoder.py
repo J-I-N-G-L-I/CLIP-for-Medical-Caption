@@ -9,6 +9,8 @@ class PositionalEncoding(nn.Module):
     def __init__(self, embed_dim, max_length=5000):
         super().__init__()
         pe = torch.zeros(max_length, embed_dim) # position encoding
+
+        # position.shape = [max_length, 1]
         position = torch.arange(0, max_length, dtype=torch.float).unsqueeze(1) # unsqueeze(1) for later broadcasting
 
         # frequency term
@@ -18,7 +20,7 @@ class PositionalEncoding(nn.Module):
         pe[:, 0::2] = torch.sin(position * div_term) # for even dimension
         pe[:, 1::2] = torch.cos(position * div_term) # for odd dimension
 
-        pe = pe.unsqueeze(0).transpose(0, 1)
+        pe = pe.unsqueeze(0).transpose(0, 1) # pe.shape = [max_len, 1, embed_dim]
         self.register_buffer('pe', pe)
 
     def forward(self, x):
@@ -59,7 +61,7 @@ class TextEncoder(nn.Module):
         # DONE: see _init_weights
         self._init_weights()
 
-    def create_padding_mask(self, x, pad_token=0):
+    def create_padding_mask(self, x, pad_token: int=0):
         """
         :param x: token sequence [B, sequence_len]
         :param pad_token: ID of padding token
@@ -69,8 +71,13 @@ class TextEncoder(nn.Module):
         return x == pad_token
 
     def forward(self, x, attention_mask=None):
-        # x.shape = [B, sequence_len]
-        # pad_token = 0
+        """
+
+        :param x: x.shape = [B, sequence_len]
+        :param attention_mask:
+        :return:
+        """
+        pad_token = 0
 
         # token embedding
         # token_mask = (x != pad_token) # [B, sequence_len]
@@ -79,27 +86,35 @@ class TextEncoder(nn.Module):
         # add pe, but be careful of dimensions
         x.transpose(0, 1) # [sequence_len, B, embed_dim]
         x = self.positional_encoding(x)
-        x.transpose(0, 1) # turn back to [B, sequence_len, embed_dim]
+        x.transpose(0, 1) # back to [B, sequence_len, embed_dim]
 
         # get attention mask
         if attention_mask is None:
             attention_mask = self.create_padding_mask(x.sum(-1)) # get mask -> [B, sequence_len]
 
         # encoding from transformer
-        encoder = self.encoder(x, src_key_padding_mask=attention_mask)
+        encoded = self.encoder(x, src_key_padding_mask=attention_mask) # [B, sequence_len, embed_dim]
 
-        # pooling
+        # # pooling
         batch_size = x.shape[0]
         if attention_mask is not None:
-            # TODO: Change to mean pooling
             # find the first non-padding feature
             # valid_length = (~attention_mask).sum(dim=1) # [B]
-            output = encoder[torch.arange(batch_size), 0] # for simple implement, just use the first token
+            # output = encoded[torch.arange(batch_size), 0] # for simple implement, just use the first token
+
+            # TODO: Change to average pooling
+            # Done
+            # average pooling (sum the sequence_len dimension, the whole sentence will be compressed to one vector,
+            # so within batch will be [B, embed_dim] -> sequence pooling)
+            mask = (~attention_mask).unsqueeze(-1).type_as(encoded) # [B, sequence_len, 1]
+
+            summed = (encoded * mask).sum(dim=1) # [B, embed_dim]
+            counts = mask.sum(dim=1).clamp(min=1e-6) # use clamp to avoid dividing 0
+            output = summed / counts
         else:
-            output = encoder[:, 0]
+            output = encoded[:, 0]
 
         output = self.ln(output)
-
         return output
 
     def _init_weights(self):
@@ -123,4 +138,17 @@ if __name__ == '__main__':
         output = text_encoder(dummy_input)
     print(output.shape) # should be [10, 512]
     print(output)
+    print("mean abs:", output.abs().mean())
+
+    # # test for masking mechanism
+    # encoded = torch.tensor([
+    #     [[1.0, 0.0], [2.0, 0.0], [0.0, 0.0]],
+    #     [[4.0, 1.0], [0.0, 0.0], [0.0, 0.0]]
+    # ])
+    #
+    # token_mask = torch.tensor([
+    #     [1, 1, 0],
+    #     [1, 0, 0]
+    # ])
+    #
 
