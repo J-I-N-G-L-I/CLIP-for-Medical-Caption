@@ -139,16 +139,3 @@ if __name__ == '__main__':
     print(output.shape) # should be [10, 512]
     print(output)
     print("mean abs:", output.abs().mean())
-
-    # # test for masking mechanism
-    # encoded = torch.tensor([
-    #     [[1.0, 0.0], [2.0, 0.0], [0.0, 0.0]],
-    #     [[4.0, 1.0], [0.0, 0.0], [0.0, 0.0]]
-    # ])
-    #
-    # token_mask = torch.tensor([
-    #     [1, 1, 0],
-    #     [1, 0, 0]
-    # ])
-    #
-
