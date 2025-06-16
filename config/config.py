@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 @dataclass
 class ModelConfig:
-    """Configure hyperparameters for the CLIP model."""
+    """Configuration for the CLIP model."""
     # basic parameters
     embed_dim: int = 512
     vision_width: int = 768
@@ -29,11 +29,34 @@ class ModelConfig:
 
 @dataclass
 class TrainingConfig:
-    # data configs
+    """Configuration for training process"""
     data_root: str = r'C:\D\Programming\Datasets\rocov2'
     train_split: str = 'train'
     val_split: str = 'valid'
     test_split: str = 'test'
 
+    # training parameters
+    batch_size: int = 128
+    num_workers: int = 8
+    learning_rate: float = 5e-4
+    weight_decay: float = 0.01
+    warmup_steps: int = 2000
+    max_epochs: int = 30
 
+    # optimizer parameters
+    beta1: float = 0.9
+    beta2: float = 0.999
+    eps: float = 1e-8
+
+    # lr scheduler parameters
+    min_lr: float = 1e-6
+
+    # saving and logging records
+    save_dir: str = './checkpoints'
+    log_dir: str = './logs'
+    save_freq: int = 1
+    eval_freq: int = 1
+    log_freq: int = 1
+
+    mixed_precision: bool=True
     device: str = 'cuda' if torch.cuda.is_available() else 'cpu'

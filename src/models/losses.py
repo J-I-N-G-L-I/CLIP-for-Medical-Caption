@@ -32,7 +32,11 @@ class ContrastiveLoss(nn.Module):
         return total_loss, {
             'image2text_loss': image2text_loss.item(),
             'text2image_loss': text2image_loss.item(),
-            similarity_matrix: similarity_matrix.detach(),
+
+            # only for tests in the trainer.py
+            # 'image2text_loss': image2text_loss,
+            # 'text2image_loss': text2image_loss,
+            # similarity_matrix: similarity_matrix.detach(),
         }
 
 class InfoNCELoss(nn.Module):

@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from .vision_encoder import ResNetVisionEncoder, ViTEncoder
 from .text_encoder import TextEncoder
-from .loss import ContrastiveLoss
+from .losses import ContrastiveLoss
 
 class CLIPModel(nn.Module):
     """the main CLIP model"""
@@ -41,10 +41,7 @@ class CLIPModel(nn.Module):
         )
 
         # init contrastive loss
-        self.loss_fn = ContrastiveLoss(
-            temperature=config.temperature,
-            margin=config.margin
-        )
+        self.loss_fn = ContrastiveLoss(temperature=config.temperature)
 
         # init learnable temperature
         self.logit_scale = nn.Parameter(torch.ones([]) *
@@ -84,14 +81,14 @@ class CLIPModel(nn.Module):
 
         logit_scale = self.logit_scale.exp()
         logits_per_image = logit_scale * image_features_norm @ text_features_norm.T
-        logtis_per_text = logits_per_image.T
+        logits_per_text = logits_per_image.T
 
         output = {
             'image_features': image_features,
             'text_features': text_features,
             'logit_scale': logit_scale,
             'logits_per_image': logits_per_image,
-            'logits_per_text': logtis_per_text
+            'logits_per_text': logits_per_text
         }
         if return_loss:
             loss, loss_dict = self.loss_fn(image_features, text_features)
