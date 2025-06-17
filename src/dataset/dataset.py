@@ -34,13 +34,15 @@ class ROCOv2Dataset(Dataset):
 
         for _, row in df.iterrows():
             image_id = row['ID']
-            caption = row['Caption']
+            # caption = row['Caption']
+            text = row['Caption']
             image_path = os.path.join(image_dir, f"{image_id}.jpg")
 
             if os.path.exists(image_path):
                 data.append({
                     'image_path': image_path,
-                    'caption': caption,
+                    # 'caption': caption,
+                    'text': text,
                     'image_id': image_id
                 })
             else:
@@ -63,12 +65,15 @@ class ROCOv2Dataset(Dataset):
         if self.image_transform:
             image = self.image_transform(image)
 
-        caption = item['caption']
+        # caption = item['caption']
+        text = item['caption']
         if self.text_transform:
-            caption = self.text_transform(caption)
+            # caption = self.text_transform(caption)
+            text = self.text_transform(text)
 
         return {
             'image': image,
-            'caption': caption,
+            # 'caption': caption,
+            'text': text,
             'image_id': item['image_id']
         }

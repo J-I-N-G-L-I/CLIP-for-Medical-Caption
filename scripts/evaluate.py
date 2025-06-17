@@ -1,5 +1,9 @@
 import argparse
 import torch
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from config.config import ModelConfig, TrainingConfig
 from src.dataset.dataset import ROCOv2Dataset
 from src.dataset.transforms import ImageTransform, TextTransform

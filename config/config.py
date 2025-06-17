@@ -11,7 +11,8 @@ class ModelConfig:
     text_width: int = 512
 
     # parameters for vision encoder
-    vision_model: str = "resnet50"
+    # vision_model: str = "resnet50"
+    vision_encoder: str = "resnet50"
     image_size: int = 224
     vision_layers: int = 12
     vision_heads: int = 12

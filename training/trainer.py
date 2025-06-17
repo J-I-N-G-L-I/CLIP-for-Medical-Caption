@@ -59,7 +59,8 @@ class CLIPTrainer:
         os.makedirs(config.log_dir, exist_ok=True)
 
         # open mixed precision training
-        self.scaler = torch.cuda.amp.GradScaler(enabled=config.mixed_precision)
+        # self.scaler = torch.cuda.amp.GradScaler(enabled=config.mixed_precision)
+        self.scaler = torch.amp.GradScaler('cuda', enabled=config.mixed_precision)
 
         # init tensorboard writer
         self.writer = SummaryWriter(log_dir=config.log_dir)
@@ -76,7 +77,8 @@ class CLIPTrainer:
             texts = batch['text'].to(self.device)
 
             # Forward with mixed precision
-            with torch.cuda.amp.autocast(enabled=self.config.mixed_precision):
+            # with torch.cuda.amp.autocast(enabled=self.config.mixed_precision):
+            with torch.amp.autocast('cuda', enabled=self.config.mixed_precision):
                 outputs = self.model(images, texts, return_loss=True)
                 loss = outputs["loss"]
 
@@ -107,8 +109,10 @@ class CLIPTrainer:
         self.writer.add_scalar('Loss/train', loss, self.global_step)
 
         if 'image2text_loss' in outputs and 'text2image_loss' in outputs:
-            self.writer.add_scalar('Loss/image_loss', outputs['image2text_loss'].item(), self.global_step)
-            self.writer.add_scalar('Loss/text_loss', outputs['text2image_loss'].item(), self.global_step)
+            # self.writer.add_scalar('Loss/image_loss', outputs['image2text_loss'].item(), self.global_step)
+            self.writer.add_scalar('Loss/image_loss', outputs['image2text_loss'], self.global_step)
+            # self.writer.add_scalar('Loss/text_loss', outputs['text2image_loss'].item(), self.global_step)
+            self.writer.add_scalar('Loss/text_loss', outputs['text2image_loss'], self.global_step)
 
         current_lr = self.optimizer.param_groups[0]['lr']
         self.writer.add_scalar('Learning_Rate', current_lr, self.global_step)
