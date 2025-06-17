@@ -60,3 +60,4 @@ class TrainingConfig:
 
     mixed_precision: bool=True
     device: str = 'cuda' if torch.cuda.is_available() else 'cpu'
+    seed: int = 42
