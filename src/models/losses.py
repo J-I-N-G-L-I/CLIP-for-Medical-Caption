@@ -60,29 +60,3 @@ class InfoNCELoss(nn.Module):
 
         loss = F.cross_entropy(logits, labels)
         return loss
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -30,7 +30,8 @@ class ModelConfig:
 @dataclass
 class TrainingConfig:
     """Configuration for training process"""
-    data_root: str = r'C:\D\Programming\Datasets\rocov2'
+    # data_root: str = r'C:\D\Programming\Datasets\rocov2'
+    data_root: str = '/scratch/sc232jl/rocov2'
     train_split: str = 'train'
     val_split: str = 'valid'
     test_split: str = 'test'

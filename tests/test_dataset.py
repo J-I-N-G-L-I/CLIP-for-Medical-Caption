@@ -28,7 +28,8 @@ def visualize_sample(sample):
 
 
 if __name__ == '__main__':
-    data_root = r'C:\D\Programming\Datasets\rocov2'
+    # data_root = r'C:\D\Programming\Datasets\rocov2'
+    data_root = '/scratch/sc232jl/rocov2'
     transform = transforms.Compose([
         transforms.Resize((224, 224)),
         transforms.ToTensor(),

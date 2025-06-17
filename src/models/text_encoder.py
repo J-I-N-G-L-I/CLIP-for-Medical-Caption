@@ -2,9 +2,6 @@ import torch
 import torch.nn as nn
 import math
 
-from numpy import dtype
-
-
 class PositionalEncoding(nn.Module):
     def __init__(self, embed_dim, max_length=5000):
         super().__init__()

@@ -11,7 +11,8 @@ def main():
     """Evaluate the model on test dataset."""
 
     parser = argparse.ArgumentParser(description='Testing CLIP for Medical Images Captions')
-    parser.add_argument('--data_root', type=str, default=r'C:\D\Programming\Datasets\rocov2')
+    # parser.add_argument('--data_root', type=str, default=r'C:\D\Programming\Datasets\rocov2')
+    parser.add_argument('--data_root', type=str, default='/scratch/sc232jl/rocov2')
     parser.add_argument('--checkpoint', type=str, required=True)
     parser.add_argument('--split', type=str, default='test')
     parser.add_argument('--batch_size', type=int, default=128)

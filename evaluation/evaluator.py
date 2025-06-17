@@ -49,7 +49,7 @@ class CLIPEvaluator:
             image_features = self.model.encode_image(images)
             text_features = self.model.encode_text(texts)
 
-            # normalie
+            # normalize
             image_features = F.normalize(image_features, dim=-1)
             text_features = F.normalize(text_features, dim=-1)
 
