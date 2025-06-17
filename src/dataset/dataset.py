@@ -66,7 +66,7 @@ class ROCOv2Dataset(Dataset):
             image = self.image_transform(image)
 
         # caption = item['caption']
-        text = item['caption']
+        text = item['text']
         if self.text_transform:
             # caption = self.text_transform(caption)
             text = self.text_transform(text)
