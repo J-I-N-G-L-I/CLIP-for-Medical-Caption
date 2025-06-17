@@ -57,3 +57,9 @@ def main():
 
 if __name__ == '__main__':
     main()
+    # Example usage:
+    # python scripts /inference.py \
+    #     --checkpoint choeckpoints/epoch_29.pt \
+    #     --image /scratch/sc232jl/rocov2/test_images/test/ROCOv2_2023_test_000001 \
+    #     --texts "CT chest axial view showing a huge ascending aortic aneurysm (*)." "normal chest" "cardiomegaly present"
+
