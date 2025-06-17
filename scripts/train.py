@@ -20,7 +20,7 @@ def set_seed(seed):
     torch.backends.cudnn.benchmark = False
 
 def main():
-    parser = argparse.ArgumentParser(description='CLIP for Medical Images Captions')
+    parser = argparse.ArgumentParser(description='Training CLIP for Medical Images Captions')
     parser.add_argument('--data_root', type=str, default=r'C:\D\Programming\Datasets\rocov2')
     parser.add_argument('--save_dir', type=str, default='./checkpoints')
     parser.add_argument('--batch_size', type=int, default=128)
