@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from .vision_encoder import ResNetVisionEncoder, ViTEncoder
 from .text_encoder import TextEncoder
-# from .losses import ContrastiveLoss
+from .losses import ContrastiveLoss
 import torch.nn.functional as F
 
 class CLIPModel(nn.Module):
@@ -42,7 +42,7 @@ class CLIPModel(nn.Module):
         )
 
         # init contrastive loss
-        # self.loss_fn = ContrastiveLoss(temperature=config.temperature)
+        self.loss_fn = ContrastiveLoss(temperature=config.temperature)
 
         # init learnable temperature
         self.logit_scale = nn.Parameter(torch.ones([]) *
@@ -98,13 +98,19 @@ class CLIPModel(nn.Module):
             # # add other loss information from loss_dict
             # output.update(loss_dict)
 
-            labels = torch.arange(images.size(0), device=images.device)
-            loss_i2t = F.cross_entropy(logits_per_image, labels)
-            loss_t2i = F.cross_entropy(logits_per_text, labels)
-            loss = (loss_i2t + loss_t2i) / 2
+            # labels = torch.arange(images.size(0), device=images.device)
+            # loss_i2t = F.cross_entropy(logits_per_image, labels)
+            # loss_t2i = F.cross_entropy(logits_per_text, labels)
+            # loss = (loss_i2t + loss_t2i) / 2
+            #
+            # output["loss"] = loss
+            # output["image2text_loss"] = loss_i2t.item()
+            # output["text2image_loss"] = loss_t2i.item()
 
-            output["loss"] = loss
-            output["image2text_loss"] = loss_i2t.item()
-            output["text2image_loss"] = loss_t2i.item()
+            if return_loss:
+                loss, loss_dict = self.loss_fn(image_features, text_features)
+                output['loss'] = loss
+                output['image2text_loss'] = loss_dict['image2text_loss']
+                output['text2image_loss'] = loss_dict['text2image_loss']
 
         return output
