@@ -74,12 +74,22 @@ class CLIPTrainer:
 
         for batch_idx, batch in enumerate(progress_bar):
             images = batch['image'].to(self.device)
-            texts = batch['text'].to(self.device)
+            # texts = batch['text'].to(self.device)
+
+            # use the tokenizer to get input_ids and attention_mask
+            input_ids = batch['input_ids'].to(self.device)
+            attention_mask = batch['attention_mask'].to(self.device)
 
             # Forward with mixed precision
             # with torch.cuda.amp.autocast(enabled=self.config.mixed_precision):
             with torch.amp.autocast('cuda', enabled=self.config.mixed_precision):
-                outputs = self.model(images, texts, return_loss=True)
+                # outputs = self.model(images, texts, return_loss=True)
+                outputs = self.model(
+                    images=images,
+                    input_ids=input_ids,
+                    attention_mask=attention_mask,
+                    return_loss=True
+                )
                 loss = outputs["loss"]
 
             # backward
@@ -134,10 +144,18 @@ class CLIPTrainer:
         with torch.no_grad():
             for batch in tqdm(self.val_loader, desc='Validation'):
                 images = batch['image'].to(self.device)
-                texts = batch['text'].to(self.device)
+                # texts = batch['text'].to(self.device)
+                input_ids = batch['input_ids'].to(self.device)
+                attention_mask = batch['attention_mask'].to(self.device)
 
                 with torch.cuda.amp.autocast(enabled=self.config.mixed_precision):
-                    outputs = self.model(images, texts, return_loss=True)
+                    # outputs = self.model(images, texts, return_loss=True)
+                    outputs = self.model(
+                        images=images,
+                        input_ids=input_ids,
+                        attention_mask=attention_mask,
+                        return_loss=True
+                    )
                     loss = outputs["loss"]
                 total_loss += loss.item()
             avg_loss = total_loss / num_batches
