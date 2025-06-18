@@ -5,6 +5,8 @@ from config.config import ModelConfig
 from src.dataset.transforms import ImageTransform, TextTransform
 from src.models.clip_model import CLIPModel
 
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 def main():
     """ example inference script for CLIP model """
     parser = argparse.ArgumentParser(description='Inference of the model')
@@ -14,6 +16,7 @@ def main():
     args = parser.parse_args()
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(device)
 
     model_config = ModelConfig()
     model = CLIPModel(model_config)
