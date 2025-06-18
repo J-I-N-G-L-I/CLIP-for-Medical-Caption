@@ -67,13 +67,19 @@ class ROCOv2Dataset(Dataset):
 
         # caption = item['caption']
         text = item['text']
-        if self.text_transform:
-            # caption = self.text_transform(caption)
-            text = self.text_transform(text)
+        # if self.text_transform:
+        #     # caption = self.text_transform(caption)
+        #     text = self.text_transform(text)
+
+
+        # use openai tokenizer
+        text = self.text_transform(text)
 
         return {
             'image': image,
             # 'caption': caption,
-            'text': text,
+            # 'text': text,
+            "input_ids": text["input_ids"],
+            "attention_mask": text["attention_mask"],
             'image_id': item['image_id']
         }
