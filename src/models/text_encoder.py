@@ -81,16 +81,20 @@ class TextEncoder(nn.Module):
         x = self.token_embedding(x) # [B, sequence_len, embed_dim]
 
         # add pe, but be careful of dimensions
-        x.transpose(0, 1) # [sequence_len, B, embed_dim]
+        x = x.transpose(0, 1) # [sequence_len, B, embed_dim]
         x = self.positional_encoding(x)
-        x.transpose(0, 1) # back to [B, sequence_len, embed_dim]
+        x = x.transpose(0, 1) # back to [B, sequence_len, embed_dim]
 
         # get attention mask
-        if attention_mask is None:
-            attention_mask = self.create_padding_mask(x.sum(-1)) # get mask -> [B, sequence_len]
-
+        # if attention_mask is None:
+        #     attention_mask = self.create_padding_mask(x.sum(-1)) # get mask -> [B, sequence_len]
+        if attention_mask is not None:
+            pad_mask = (attention_mask == 0)
+        else:
+            pad_mask = self.create_padding_mask(x.sum(-1))
         # encoding from transformer
-        encoded = self.encoder(x, src_key_padding_mask=attention_mask) # [B, sequence_len, embed_dim]
+        # encoded = self.encoder(x, src_key_padding_mask=attention_mask) # [B, sequence_len, embed_dim]
+        encoded = self.encoder(x, src_key_padding_mask=pad_mask)
 
         # # pooling
         batch_size = x.shape[0]
