@@ -1,6 +1,8 @@
 import os
 import torch
 from dataclasses import dataclass
+from transformers import CLIPTokenizer
+tokenizer = CLIPTokenizer.from_pretrained("openai/clip-vit-base-patch32")
 
 @dataclass
 class ModelConfig:
@@ -19,7 +21,8 @@ class ModelConfig:
 
     # parameters for text encoder
     text_model: str = "bert-base"
-    vocab_size: int = 30522  # bert-base vocab size
+    # vocab_size: int = 30522  # bert-base vocab size
+    vocab_size = tokenizer.vocab_size
     max_text_length: int = 256
     text_layers: int = 6
     text_heads: int = 8
