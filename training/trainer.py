@@ -161,7 +161,7 @@ class CLIPTrainer:
                 input_ids = batch['input_ids'].to(self.device)
                 attention_mask = batch['attention_mask'].to(self.device)
 
-                with torch.cuda.amp.autocast(enabled=self.config.mixed_precision):
+                with torch.amp.autocast('cuda', enabled=self.config.mixed_precision):
                     # outputs = self.model(images, texts, return_loss=True)
                     outputs = self.model(
                         images=images,
