@@ -56,25 +56,41 @@ class CLIPModel(nn.Module):
         """
         return self.vision_encoder(images)
 
-    def encode_text(self, texts):
+    def encode_text(self, input_ids, attention_mask=None):
         """
-        Encode texts to feature vectors.
-        :param texts: torch.Tensor, shape = [B, sequence_len]
+        Encode tokenized text.
+        :param input_ids: torch.Tensor, shape = [B, seq_len]
+        :param attention_mask: torch.Tensor, shape = [B, seq_len]
         :return: torch.Tensor, shape = [B, embed_dim]
         """
-        return self.text_encoder(texts)
+        return self.text_encoder(input_ids, attention_mask)
 
-    def forward(self, images, texts, attention_mask=None, return_loss=True):
+    # def forward(self, images, texts, attention_mask=None, return_loss=True):
+    #     """
+    #     Forward pass of the CLIP model.
+    #     :param images: torch.Tensor, shape = [B, 3, H, W]
+    #     :param texts: torch.Tensor, shape = [B, sequence_len]
+    #     :param attention_mask: optional attention mask for text encoder
+    #     :param return_loss: whether to return loss
+    #     :return: if return_loss is True, return loss; otherwise return image and text features
+    #     """
+    #     image_features = self.encode_image(images)
+    #     text_features = self.encode_text(texts)
+
+    def forward(self,
+                images,
+                input_ids,
+                attention_mask=None,
+                return_loss=True):
         """
-        Forward pass of the CLIP model.
-        :param images: torch.Tensor, shape = [B, 3, H, W]
-        :param texts: torch.Tensor, shape = [B, sequence_len]
-        :param attention_mask: optional attention mask for text encoder
-        :param return_loss: whether to return loss
-        :return: if return_loss is True, return loss; otherwise return image and text features
+        :param images:       torch.Tensor, shape = [B,3,H,W]
+        :param input_ids:    torch.Tensor, shape = [B, sequence_len]
+        :param attention_mask: optional torch.Tensor, shape = [B, sequence_len]
+        :param return_loss:  bool
         """
+
         image_features = self.encode_image(images)
-        text_features = self.encode_text(texts)
+        text_features = self.encode_text(input_ids, attention_mask)
 
         # calculate similarity
         image_features_norm = torch.nn.functional.normalize(image_features, dim=-1)
