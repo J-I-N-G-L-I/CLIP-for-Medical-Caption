@@ -123,10 +123,21 @@ class CLIPModel(nn.Module):
             # output["image2text_loss"] = loss_i2t.item()
             # output["text2image_loss"] = loss_t2i.item()
 
-            if return_loss:
-                loss, loss_dict = self.loss_fn(image_features, text_features)
-                output['loss'] = loss
-                output['image2text_loss'] = loss_dict['image2text_loss']
-                output['text2image_loss'] = loss_dict['text2image_loss']
+            # 让 logit_scale 真正参与梯度：用 logits 计算交叉熵
+            labels = torch.arange(images.size(0), device=images.device)
+            loss_i2t = F.cross_entropy(logits_per_image, labels)
+            loss_t2i = F.cross_entropy(logits_per_text, labels)
+            loss = (loss_i2t + loss_t2i) / 2
+
+            output.update({
+                'loss': loss,
+                'image2text_loss': loss_i2t,
+                'text2image_loss': loss_t2i,
+            })
+            # if return_loss:
+            #     loss, loss_dict = self.loss_fn(image_features, text_features)
+            #     output['loss'] = loss
+            #     output['image2text_loss'] = loss_dict['image2text_loss']
+            #     output['text2image_loss'] = loss_dict['text2image_loss']
 
         return output

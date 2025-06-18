@@ -28,11 +28,18 @@ class CLIPEvaluator:
 
         with torch.no_grad():
             for batch in tqdm(dataloader, desc="feature extraction"):
+                # images = batch['image'].to(self.device)
+                # texts = batch['text'].to(self.device)
+                #
+                # image_features = self.model.encode_image(images)
+                # text_features = self.model.encode_text(texts)
+
                 images = batch['image'].to(self.device)
-                texts = batch['text'].to(self.device)
+                input_ids = batch['input_ids'].to(self.device)
+                attention_mask = batch['attention_mask'].to(self.device)
 
                 image_features = self.model.encode_image(images)
-                text_features = self.model.encode_text(texts)
+                text_features = self.model.encode_text(input_ids, attention_mask)\
 
                 # for efficient gpu memory usage
                 image_features.append(image_features.cpu())

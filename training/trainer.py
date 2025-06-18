@@ -8,6 +8,7 @@ from tqdm import tqdm
 
 from torch.utils.tensorboard import SummaryWriter
 from src.models.clip_model import CLIPModel
+from transformers import get_cosine_schedule_with_warmup
 
 class CLIPTrainer:
     def __init__(self, model, train_dataset, val_dataset, config):
@@ -43,10 +44,21 @@ class CLIPTrainer:
         )
 
         # Init lr scheduler
-        self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+        # self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+        #     self.optimizer,
+        #     T_max=config.max_epochs,
+        #     eta_min=self.config.min_lr,
+        # )
+
+        # 计算总步数：epoch 数 × 每 epoch 的 batch 数
+        total_steps = config.max_epochs * len(self.train_loader)
+        # Cosine + linear warmup
+        self.scheduler = get_cosine_schedule_with_warmup(
             self.optimizer,
-            T_max=config.max_epochs,
-            eta_min=self.config.min_lr,
+            num_warmup_steps=config.warmup_steps,
+            num_training_steps=total_steps,
+            num_cycles=0.5,  # 半个周期常用
+            last_epoch=-1
         )
 
         # training state
@@ -96,6 +108,7 @@ class CLIPTrainer:
             self.optimizer.zero_grad()
             self.scaler.scale(loss).backward()
             self.scaler.step(self.optimizer)
+            self.scheduler.step()
             self.scaler.update()
 
             total_loss += loss.item()

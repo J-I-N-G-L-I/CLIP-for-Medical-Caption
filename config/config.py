@@ -23,7 +23,8 @@ class ModelConfig:
     text_model: str = "bert-base"
     # vocab_size: int = 30522  # bert-base vocab size
     vocab_size = tokenizer.vocab_size
-    max_text_length: int = 256
+    # max_text_length: int = 256
+    max_text_length: int = 77
     text_layers: int = 6
     text_heads: int = 8
 
@@ -46,7 +47,7 @@ class TrainingConfig:
     learning_rate: float = 5e-4
     weight_decay: float = 0.01
     warmup_steps: int = 2000
-    max_epochs: int = 30
+    max_epochs: int = 50
 
     # optimizer parameters
     beta1: float = 0.9
