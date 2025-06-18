@@ -91,7 +91,20 @@ python scripts/train.py \
   tensorboard --logdir logs/
   ```
 
-### 3. Inference
+### 3. Evaluation
+
+Compute retrieval metrics on a split (e.g., validation):
+
+```bash
+python scripts/evaluate.py \
+  --checkpoint checkpoints/best_model.pth \
+  --data_root /path/to/rocov2 \
+  --split valid
+```
+
+Supported metrics include Recall\@1, Recall\@5, Recall\@10, and Median Rank.
+
+### 4. Inference
 
 To rank candidate captions for a given image, use:
 
@@ -108,18 +121,16 @@ python scripts/inference.py --checkpoint checkpoints/best_model.pth --image /scr
 
 The script outputs similarity scores (higher means more relevant) and sorts the candidates.
 
-### 4. Evaluation
+* Example of inference result:  
+![example_image](https://github.com/J-I-N-G-L-I/CLIP-for-Medical-Caption/blob/main/ROCOv2_2023_test_000001.jpg)  
 
-Compute retrieval metrics on a split (e.g., validation):
+Image: /dataset/rocov2/test_images/test/ROCOv2_2023_test_000001.jpg  
 
-```bash
-python scripts/evaluate.py \
-  --checkpoint checkpoints/best_model.pth \
-  --data_root /path/to/rocov2 \
-  --split valid
-```
+Sorted Texts by Similarity:  
+0\. CT chest axial view showing a huge ascending aortic aneurysm (*). (score: 295.2168)  
+1\. normal chest (score: 165.5708)  
+2\. cardiomegaly present (score: 149.1423)  
 
-Supported metrics include Recall\@1, Recall\@5, Recall\@10, and Median Rank.
 
 ## Hyperparameters & Configuration
 
